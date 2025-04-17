@@ -4,6 +4,30 @@
              xmlns:local="clr-namespace:LicencesManager"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        
+
+        <!-- Définir les Path pour les icônes SVG -->
+        <PathGeometry x:Key="CopyIcon">
+            M10,20V14H20V20H22V12H20V10H12V14H10M10,4A2,2 0 0,1 12,2A2,2 0 0,1 10,4Z
+        </PathGeometry>
+        <PathGeometry x:Key="EditIcon">
+            M18.985 12.985l-3.467-3.467-1.414 1.414 3.467 3.467 5.657-5.657-1.414-1.414-5.657 5.657zm-9.878 2.122l7.071-7.071-1.414-1.414-7.071 7.071 1.414 1.414zm-4.243-1.414l-3 3 1.414 1.414 3-3-1.414-1.414z
+        </PathGeometry>
+        <PathGeometry x:Key="DeleteIcon">
+            M19,13H15V17H13V15H9V17H7V15H3V13H5V11H3V9H5V7H7V9H9V11H11V9H13V7H15V9H17V11H19V13M15,3H13V1H15V3M19,3H17V1H19V3Z
+        </PathGeometry>
+        <PathGeometry x:Key="AddIcon">
+            M19,13H13V19H11V13H5V11H11V5H13V11H19V13M19,3H13V7H11V3H5V7H11V11H13V7H15V3H19V7H17V3Z
+        </PathGeometry>
+        <PathGeometry x:Key="SaveIcon">
+            M17,9H5V7H3V13H5V11H7V13H11V15H13V13H17V11H15V13H19V15H21V13H17M17,3H5V1H3V5H5V3M17,3V5H19V3H17Z
+        </PathGeometry>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

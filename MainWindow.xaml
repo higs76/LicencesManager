@@ -7,6 +7,49 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
+        <DataGrid Name="LicencesDataGrid" AutoGenerateColumns="False" Margin="10" CanUserAddRows="False" Grid.Row="0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nom" Binding="{Binding Nom}" Width="*" />
+                <DataGridTextColumn Header="Clé" Binding="{Binding Cle}" Width="*" />
+                <DataGridTextColumn Header="Date d'Expiration" Binding="{Binding DateExpiration, StringFormat=d}" Width="120" />
+                <DataGridTextColumn Header="Observation" Binding="{Binding Observation}" Width="*" />
+                <DataGridTemplateColumn Header="Actions" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Click="CopierCle_Click" Tag="{Binding Cle}" Margin="2">
+                                    <Path Data="{StaticResource CopyIcon}" Width="20" Height="20" Fill="Black" />
+                                </Button>
+                                <Button Click="ModifierLicence_Click" Tag="{Binding}" Margin="2">
+                                    <Path Data="{StaticResource EditIcon}" Width="20" Height="20" Fill="Black" />
+                                </Button>
+                                <Button Click="SupprimerLicence_Click" Tag="{Binding}" Margin="2">
+                                    <Path Data="{StaticResource DeleteIcon}" Width="20" Height="20" Fill="Black" />
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Grid.Row="1">
+            <Button Click="AjouterLicence_Click" Margin="5">
+                <Path Data="{StaticResource AddIcon}" Width="20" Height="20" Fill="Black" />
+            </Button>
+            <Button Click="Sauvegarder_Click" Margin="5">
+                <Path Data="{StaticResource SaveIcon}" Width="20" Height="20" Fill="Black" />
+            </Button>
+        </StackPanel>
+
+        <StatusBar Grid.Row="2" Background="LightGray">
+            <StatusBarItem Content="Ready." Name="StatusBarItem" />
+        </StatusBar>
     </Grid>
 </Window>
