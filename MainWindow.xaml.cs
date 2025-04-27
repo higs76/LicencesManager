@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
+using LicencesManager.Models;
 
 namespace LicencesManager;
 
@@ -20,32 +21,58 @@ namespace LicencesManager;
 /// </summary>
 public partial class MainWindow : Window
 {
+    public ObservableCollection<Dossier> Dossiers { get; set; }
     public ObservableCollection<Licence> Licences { get; set; }
     private string filePath = "licences.xml";
     private const int ClipboardClearDelay = 30; // Durée en secondes avant d'effacer le presse-papier
 
+
+
     public MainWindow()
     {
         InitializeComponent();
-        Licences = new ObservableCollection<Licence>();
-        LicencesDataGrid.ItemsSource = Licences;
+        Dossiers = new ObservableCollection<Dossier>();       
+        DossiersTreeView.ItemsSource = Dossiers;
+
+        // Ajouter un dossier initial
+        Dossiers.Add(new Dossier { Nom = "Dossier Initial" });
+
         LoadLicences();
     }
 
     private void AjouterLicence_Click(object sender, RoutedEventArgs e)
     {
-        // Ouvrir une fenêtre pour ajouter une nouvelle licence
         var window = new AjouterModifierLicence();
         if (window.ShowDialog() == true)
         {
-            Licences.Add(window.Licence);
+            var selectedDossier = DossiersTreeView.SelectedItem as Dossier;
+            if (selectedDossier != null)
+            {
+                selectedDossier.Licences.Add(window.Licence);
+            }
+        }
+    }
+
+    private void AjouterDossier_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new AjouterModifierDossier();
+        if (window.ShowDialog() == true)
+        {
+            var selectedDossier = DossiersTreeView.SelectedItem as Dossier;
+            if (selectedDossier != null)
+            {
+                selectedDossier.SousDossiers.Add(window.Dossier);
+            }
+            else
+            {
+                Dossiers.Add(window.Dossier);
+            }
         }
     }
 
     private void ModifierLicence_Click(object sender, RoutedEventArgs e)
     {
-        // Ouvrir une fenêtre pour modifier la licence sélectionnée
-        if (LicencesDataGrid.SelectedItem is Licence selectedLicence)
+        if (sender is Button button && button.Tag is Licence selectedLicence)
         {
             var window = new AjouterModifierLicence(selectedLicence);
             if (window.ShowDialog() == true)
@@ -62,11 +89,28 @@ public partial class MainWindow : Window
             var result = MessageBox.Show("Êtes-vous sûr de vouloir supprimer cette licence ?", "Confirmation de suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
-                Licences.Remove(selectedLicence);
+                var selectedDossier = DossiersTreeView.SelectedItem as Dossier;
+                if (selectedDossier != null)
+                {
+                    selectedDossier.Licences.Remove(selectedLicence);
+                }
             }
         }
     }
 
+    private void DossiersTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    {
+        if (e.NewValue is Dossier selectedDossier)
+        {
+            LicencesDataGrid.ItemsSource = selectedDossier.Licences;
+        }
+    }
+
+    private void Sauvegarder_Click(object sender, RoutedEventArgs e)
+    {
+        SaveLicences();
+        MessageBox.Show("Données sauvegardées avec succès.", "Sauvegarde", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
 
     private async void CopierCle_Click(object sender, RoutedEventArgs e)
     {
@@ -94,21 +138,21 @@ public partial class MainWindow : Window
     {
         if (File.Exists(filePath))
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(ObservableCollection<Licence>));
+            XmlSerializer serializer = new XmlSerializer(typeof(ObservableCollection<Dossier>), new XmlRootAttribute("ArrayOfDossier"));
             using (StreamReader reader = new StreamReader(filePath))
             {
-                Licences = (ObservableCollection<Licence>)serializer.Deserialize(reader);
-                LicencesDataGrid.ItemsSource = Licences;
+                Dossiers = (ObservableCollection<Dossier>)serializer.Deserialize(reader);
+                DossiersTreeView.ItemsSource = Dossiers;
             }
         }
     }
 
     private void SaveLicences()
     {
-        XmlSerializer serializer = new XmlSerializer(typeof(ObservableCollection<Licence>));
+        XmlSerializer serializer = new XmlSerializer(typeof(ObservableCollection<Dossier>), new XmlRootAttribute("ArrayOfDossier"));
         using (StreamWriter writer = new StreamWriter(filePath))
         {
-            serializer.Serialize(writer, Licences);
+            serializer.Serialize(writer, Dossiers);
         }
     }
 
@@ -117,12 +161,5 @@ public partial class MainWindow : Window
         base.OnClosing(e);
         SaveLicences();
     }
-
-    private void Sauvegarder_Click(object sender, RoutedEventArgs e)
-    {
-        SaveLicences();
-        MessageBox.Show("Données sauvegardées avec succès.", "Sauvegarde", MessageBoxButton.OK, MessageBoxImage.Information);
-    }
-
-
 }
+

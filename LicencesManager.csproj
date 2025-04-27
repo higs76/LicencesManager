@@ -9,8 +9,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\add_folder_icon.png" />
+    <None Remove="images\add_icon.png" />
+    <None Remove="images\copy_icon.png" />
+    <None Remove="images\delete_icon.png" />
+    <None Remove="images\edit_icon.png" />
+    <None Remove="images\folder_icon.png" />
+    <None Remove="images\folder_open_icon.png" />
+    <None Remove="images\save_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MahApps.Metro" Version="2.4.10" />
     <PackageReference Include="SharpVectors.Wpf" Version="1.8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\add_folder_icon.png" />
+    <Resource Include="images\add_icon.png" />
+    <Resource Include="images\copy_icon.png" />
+    <Resource Include="images\delete_icon.png" />
+    <Resource Include="images\edit_icon.png" />
+    <Resource Include="images\folder_icon.png" />
+    <Resource Include="images\folder_open_icon.png" />
+    <Resource Include="images\save_icon.png" />
   </ItemGroup>
 
 </Project>
