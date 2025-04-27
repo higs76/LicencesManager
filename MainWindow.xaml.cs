@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
 using LicencesManager.Models;
+using Microsoft.Win32;
 
 namespace LicencesManager;
 
@@ -22,22 +23,36 @@ namespace LicencesManager;
 public partial class MainWindow : Window
 {
     public ObservableCollection<Dossier> Dossiers { get; set; }
-    public ObservableCollection<Licence> Licences { get; set; }
-    private string filePath = "licences.xml";
     private const int ClipboardClearDelay = 30; // Durée en secondes avant d'effacer le presse-papier
+    private AppConfig config;
+    private GestionLicences gestionLicences;
 
 
 
     public MainWindow()
     {
         InitializeComponent();
-        Dossiers = new ObservableCollection<Dossier>();       
+        config = AppConfig.LoadConfig("appsettings.json");
+        gestionLicences = new GestionLicences(config.DataFilePath);
+
+        Dossiers = gestionLicences.LoadLicences();
         DossiersTreeView.ItemsSource = Dossiers;
+               
 
-        // Ajouter un dossier initial
-        Dossiers.Add(new Dossier { Nom = "Dossier Initial" });
+    }
 
-        LoadLicences();
+    private void DossiersTreeView_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Sélectionner le premier dossier par défaut
+        if (Dossiers.Count > 0)
+        {
+            var firstItem = DossiersTreeView.ItemContainerGenerator.ContainerFromIndex(0) as TreeViewItem;
+            if (firstItem != null)
+            {
+                firstItem.IsSelected = true;
+                firstItem.Focus();
+            }
+        }
     }
 
     private void AjouterLicence_Click(object sender, RoutedEventArgs e)
@@ -55,10 +70,10 @@ public partial class MainWindow : Window
 
     private void AjouterDossier_Click(object sender, RoutedEventArgs e)
     {
-        var window = new AjouterModifierDossier();
+        var selectedDossier = DossiersTreeView.SelectedItem as Dossier;
+        var window = new AjouterModifierDossier(parent: selectedDossier);
         if (window.ShowDialog() == true)
         {
-            var selectedDossier = DossiersTreeView.SelectedItem as Dossier;
             if (selectedDossier != null)
             {
                 selectedDossier.SousDossiers.Add(window.Dossier);
@@ -108,7 +123,7 @@ public partial class MainWindow : Window
 
     private void Sauvegarder_Click(object sender, RoutedEventArgs e)
     {
-        SaveLicences();
+        gestionLicences.SaveLicences(Dossiers);
         MessageBox.Show("Données sauvegardées avec succès.", "Sauvegarde", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
@@ -134,32 +149,37 @@ public partial class MainWindow : Window
         StatusBarItem.Content = "Ready.";
     }
 
-    private void LoadLicences()
-    {
-        if (File.Exists(filePath))
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(ObservableCollection<Dossier>), new XmlRootAttribute("ArrayOfDossier"));
-            using (StreamReader reader = new StreamReader(filePath))
-            {
-                Dossiers = (ObservableCollection<Dossier>)serializer.Deserialize(reader);
-                DossiersTreeView.ItemsSource = Dossiers;
-            }
-        }
-    }
-
-    private void SaveLicences()
-    {
-        XmlSerializer serializer = new XmlSerializer(typeof(ObservableCollection<Dossier>), new XmlRootAttribute("ArrayOfDossier"));
-        using (StreamWriter writer = new StreamWriter(filePath))
-        {
-            serializer.Serialize(writer, Dossiers);
-        }
-    }
+     
 
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
     {
         base.OnClosing(e);
-        SaveLicences();
+        gestionLicences.SaveLicences(Dossiers);
+    }
+
+    private void ParametresMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        var parametresWindow = new ParametresWindow(config.DataFilePath);
+        if (parametresWindow.ShowDialog() == true)
+        {
+            config.DataFilePath = parametresWindow.CheminActuel;
+            config.SaveConfig("appsettings.json");
+            gestionLicences = new GestionLicences(config.DataFilePath);
+            Dossiers = gestionLicences.LoadLicences();
+            DossiersTreeView.ItemsSource = Dossiers;
+        }
+    }
+
+    private void LicencesDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (LicencesDataGrid.SelectedItem is Licence selectedLicence)
+        {
+            var window = new AjouterModifierLicence(selectedLicence);
+            if (window.ShowDialog() == true)
+            {
+                LicencesDataGrid.Items.Refresh();
+            }
+        }
     }
 }
 

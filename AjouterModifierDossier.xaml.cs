@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using LicencesManager.Models;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace LicencesManager
 {
@@ -23,11 +24,13 @@ namespace LicencesManager
     public partial class AjouterModifierDossier : Window
     {
         public Dossier Dossier { get; set; }
+        private readonly Dossier parentDossier;
 
-        public AjouterModifierDossier(Dossier dossier = null)
+        public AjouterModifierDossier(Dossier dossier = null, Dossier parent = null)
         {
             InitializeComponent();
             Dossier = dossier ?? new Dossier();
+            parentDossier = parent;
             DataContext = Dossier;
 
             if (dossier != null)
@@ -38,6 +41,22 @@ namespace LicencesManager
 
         private void Enregistrer_Click(object sender, RoutedEventArgs e)
         {
+
+            if (string.IsNullOrWhiteSpace(NomTextBox.Text))
+            {
+                MessageBox.Show("Le nom ne peut pas être vide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            Dossier.Nom = NomTextBox.Text;
+
+            // Vérifier si un dossier avec le même nom existe déjà
+            if (parentDossier != null && parentDossier.SousDossiers.Any(d => d.Nom == Dossier.Nom))
+            {
+                MessageBox.Show("Un dossier avec ce nom existe déjà.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             Dossier.Nom = NomTextBox.Text;
             DialogResult = true;
             Close();

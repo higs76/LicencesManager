@@ -42,6 +42,12 @@ namespace LicencesManager
 
         private void Enregistrer_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(NomTextBox.Text))
+            {
+                MessageBox.Show("Le nom ne peut pas être vide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             Licence.Nom = NomTextBox.Text;
             Licence.Cle = CleTextBox.Text;
             Licence.DateExpiration = DateExpirationPicker.SelectedDate;

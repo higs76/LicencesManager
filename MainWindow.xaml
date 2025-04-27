@@ -3,73 +3,85 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:LicencesManager.Models"
         Title="Gestion des Licences" Height="450" Width="800">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <DockPanel>
+        <!-- Menu de paramétrage -->
+        <Menu Name="ParametresMenu" DockPanel.Dock="Top">
+            <MenuItem Header="Fichier">
+                <MenuItem Header="Paramétrage" Click="ParametresMenuItem_Click" />
+            </MenuItem>
+        </Menu>
 
-        <!-- TreeView pour les dossiers -->
-        <TreeView Name="DossiersTreeView" Margin="10" Grid.Row="0" Grid.Column="0" SelectedItemChanged="DossiersTreeView_SelectedItemChanged">
-            <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type local:Dossier}" ItemsSource="{Binding SousDossiers}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="Images/folder_icon.png" Width="16" Height="16" Margin="0,0,5,0" />
-                        <TextBlock Text="{Binding Nom}" />
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-            </TreeView.Resources>
-        </TreeView>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <!-- DataGrid pour les licences -->
-        <DataGrid Name="LicencesDataGrid" AutoGenerateColumns="False" Margin="10" CanUserAddRows="False" Grid.Row="0" Grid.Column="1">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Nom" Binding="{Binding Nom}" Width="*" />
-                <DataGridTextColumn Header="Clé" Binding="{Binding Cle}" Width="*" />
-                <DataGridTextColumn Header="Date d'Expiration" Binding="{Binding DateExpiration, StringFormat=d}" Width="120" />
-                <DataGridTextColumn Header="Observation" Binding="{Binding Observation}" Width="*" />
-                <DataGridTemplateColumn Header="Actions" Width="120">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Button Click="CopierCle_Click" Tag="{Binding Cle}" Margin="2">
-                                    <Image Source="/images/copy_icon.png" Width="16" Height="16" />
-                                </Button>
-                                <Button Click="ModifierLicence_Click" Tag="{Binding}" Margin="2">
-                                    <Image Source="/images/edit_icon.png" Width="16" Height="16" />
-                                </Button>
-                                <Button Click="SupprimerLicence_Click" Tag="{Binding}" Margin="2">
-                                    <Image Source="/images/delete_icon.png" Width="16" Height="16" />
-                                </Button>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+            <!-- TreeView pour les dossiers -->
+            <TreeView Name="DossiersTreeView" Margin="10" SelectedItemChanged="DossiersTreeView_SelectedItemChanged" Loaded="DossiersTreeView_Loaded">
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type local:Dossier}" ItemsSource="{Binding SousDossiers}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="Images/folder_icon.png" Width="16" Height="16" Margin="0,0,5,0" />
+                            <TextBlock Text="{Binding Nom}" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.Resources>
+            </TreeView>
 
-        <!-- Boutons pour ajouter, modifier et supprimer des dossiers et des licences -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Grid.Row="1" Grid.Column="1">
-            <Button Click="AjouterLicence_Click" Margin="5">
-                <Image Source="Images/add_icon.png" Width="16" Height="16" />
-            </Button>
-            <Button Click="AjouterDossier_Click" Margin="5">
-                <Image Source="Images/add_folder_icon.png" Width="16" Height="16" />
-            </Button>
-            <Button Click="Sauvegarder_Click" Margin="5">
-                <Image Source="Images/save_icon.png" Width="16" Height="16" />
-            </Button>
-        </StackPanel>
 
-        <!-- StatusBar -->
-        <StatusBar Grid.Row="2" Grid.ColumnSpan="2" Background="LightGray">
-            <StatusBarItem Content="Ready." Name="StatusBarItem" />
-        </StatusBar>
-    </Grid>
+            <!-- DataGrid pour les licences -->
+            <DataGrid Name="LicencesDataGrid" AutoGenerateColumns="False" Margin="10" CanUserAddRows="False" IsReadOnly="True" MouseDoubleClick="LicencesDataGrid_MouseDoubleClick" Grid.Row="0" Grid.Column="1">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Nom" Binding="{Binding Nom}" Width="*" />
+                    <DataGridTextColumn Header="Clé" Binding="{Binding Cle}" Width="*" />
+                    <DataGridTextColumn Header="Date d'Expiration" Binding="{Binding DateExpiration, StringFormat=d}" Width="120" />
+                    <DataGridTextColumn Header="Observation" Binding="{Binding Observation}" Width="*" />
+                    <DataGridTemplateColumn Header="Actions" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Click="CopierCle_Click" Tag="{Binding Cle}" Margin="2">
+                                        <Image Source="/images/copy_icon.png" Width="16" Height="16" />
+                                    </Button>
+                                    <Button Click="ModifierLicence_Click" Tag="{Binding}" Margin="2">
+                                        <Image Source="/images/edit_icon.png" Width="16" Height="16" />
+                                    </Button>
+                                    <Button Click="SupprimerLicence_Click" Tag="{Binding}" Margin="2">
+                                        <Image Source="/images/delete_icon.png" Width="16" Height="16" />
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Boutons pour ajouter, modifier et supprimer des dossiers et des licences -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Grid.Row="1" Grid.Column="1">
+                <Button Click="AjouterLicence_Click" Margin="5">
+                    <Image Source="Images/add_icon.png" Width="16" Height="16" />
+                </Button>
+                <Button Click="AjouterDossier_Click" Margin="5">
+                    <Image Source="Images/add_folder_icon.png" Width="16" Height="16" />
+                </Button>
+                <Button Click="Sauvegarder_Click" Margin="5">
+                    <Image Source="Images/save_icon.png" Width="16" Height="16" />
+                </Button>
+            </StackPanel>
+
+            <!-- StatusBar -->
+            <StatusBar Grid.Row="2" Grid.ColumnSpan="2" Background="LightGray" Foreground="#FF4A4949">
+                <StatusBarItem Content="Ready." Name="StatusBarItem" />
+            </StatusBar>
+        </Grid>
+        
+    </DockPanel>
+          
 </Window>
 

@@ -9,13 +9,13 @@ namespace LicencesManager.Models
 {
     public class Dossier
     {
-        public string Nom { get; set; }
+        public int Version {  get; set; }
+        public string Nom { get; set; } = string.Empty;
         public ObservableCollection<Dossier> SousDossiers { get; set; }
         public ObservableCollection<Licence> Licences { get; set; }
 
         public Dossier()
-        {
-            Nom=string.Empty;
+        {            
             SousDossiers = new ObservableCollection<Dossier>();
             Licences = new ObservableCollection<Licence>();
         }
